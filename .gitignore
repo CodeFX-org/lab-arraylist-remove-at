@@ -1,0 +1,18 @@
+# Tools #
+/target
+/.idea
+*.iml
+*.classpath
+*.project
+
+# Files #
+*.class
+*.log
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
