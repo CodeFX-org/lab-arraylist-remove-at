@@ -34,37 +34,83 @@ package org.codefx.lab.arraylist;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.SampleTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Warmup(iterations = 2, time = 2)
 @Measurement(iterations = 2, time = 2)
-@Fork(2)
+@Fork(1)
 @State(Scope.Thread)
 public class RemoveBenchmark {
 
-	@Param({"1_000", "10_000", "100_000", "1_000_000", "10_000_000"})
-	private String length = "1_000";
+	@Param({ "10_000", "100_000", "1_000_000" })
+	private String arrayLength = "1_000";
 
-    @Benchmark
-    public void baseline(Blackhole bh) {
+	private int[] removeAts;
+
+//	@Param({ "0.0", "0.1", "0.2", "0.4" })
+//	private float removeQuota = 0;
+//
+//	@Setup(Level.Iteration)
+//	public void createRemovalIndices() {
+//		Random r = new Random();
+//		int length = Integer.valueOf(arrayLength.replace("_", ""));
+//		int removalLength = (int) (length * removeQuota);
+//
+//		removeAts = new int[removalLength];
+//		for (int i = 0; i < removalLength; i++) {
+//			removeAts[i] = r.nextInt(length);
+//		}
+//	}
+
+	@Param({ "0", "10", "100", "1_000" })
+	private String removals = "0";
+
+	@Setup(Level.Iteration)
+	public void createRemovalIndices() {
+		Random r = new Random();
+		int length = Integer.valueOf(arrayLength.replace("_", ""));
+		int removals = Integer.valueOf(this.removals.replace("_", ""));
+
+		removeAts = new int[removals];
+		for (int i = 0; i < removals; i++) {
+			removeAts[i] = r.nextInt(length);
+		}
+	}
+
+	@Benchmark
+	public void baseline(Blackhole bh) {
 		ArrayList<Integer> list = createList();
 		bh.consume(list);
-    }
+	}
 
-    private ArrayList<Integer> createList() {
-    	int length = Integer.valueOf(this.length.replace("_", ""));
+	@Benchmark
+	public void listRemove(Blackhole bh) {
+		ArrayList<Integer> list = createList();
+		Arrays.sort(removeAts);
+		for (int i = removeAts.length - 1; i >= 0; i--) {
+			list.remove(removeAts[i]);
+		}
+		bh.consume(list);
+	}
+
+	private ArrayList<Integer> createList() {
+		int length = Integer.valueOf(arrayLength.replace("_", ""));
 		ArrayList<Integer> list = new ArrayList<>();
 		for (int i = 0; i < length; i++) {
 			list.add(-i);
