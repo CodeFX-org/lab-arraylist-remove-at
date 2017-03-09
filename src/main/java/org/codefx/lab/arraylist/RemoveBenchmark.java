@@ -29,16 +29,47 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.codefx.lab;
+package org.codefx.lab.arraylist;
 
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
 
-public class MyBenchmark {
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+@BenchmarkMode(Mode.SampleTime)
+@OutputTimeUnit(TimeUnit.MICROSECONDS)
+@Warmup(iterations = 2, time = 2)
+@Measurement(iterations = 2, time = 2)
+@Fork(2)
+@State(Scope.Thread)
+public class RemoveBenchmark {
+
+	@Param({"1_000", "10_000", "100_000", "1_000_000", "10_000_000"})
+	private String length = "1_000";
 
     @Benchmark
-    public void testMethod() {
-        // This is a demo/sample template for building your JMH benchmarks. Edit as needed.
-        // Put your benchmark code here.
+    public void baseline(Blackhole bh) {
+		ArrayList<Integer> list = createList();
+		bh.consume(list);
     }
+
+    private ArrayList<Integer> createList() {
+    	int length = Integer.valueOf(this.length.replace("_", ""));
+		ArrayList<Integer> list = new ArrayList<>();
+		for (int i = 0; i < length; i++) {
+			list.add(-i);
+		}
+		return list;
+	}
 
 }

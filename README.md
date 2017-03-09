@@ -2,4 +2,7 @@
 
 Given a large `ArrayList` and a bunch of indices - what's a good way to get a list without the elements at those indices?
 
-Performance benchmarks are done with [JMH](http://openjdk.java.net/projects/code-tools/jmh/), run'em with `mvn clean install`.
+Performance benchmarks are done with [JMH](http://openjdk.java.net/projects/code-tools/jmh/), run'em with:
+
+    mvn clean install
+    java -jar target/benchmarks.jar org.codefx.lab.arraylist.RemoveBenchmark
