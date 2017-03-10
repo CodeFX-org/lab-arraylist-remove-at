@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-@BenchmarkMode(Mode.SampleTime)
+@BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @Warmup(iterations = 2, time = 2)
 @Measurement(iterations = 2, time = 2)
@@ -125,6 +125,13 @@ public class RemoveBenchmark {
 	public void nullifyRemove(Blackhole bh) {
 		List<Integer> list = createArrayList();
 		List<Integer> removed = NullifyRemover.remove(list, removeAts);
+		bh.consume(removed);
+	}
+
+	@Benchmark
+	public void swapRemove(Blackhole bh) {
+		List<Integer> list = createArrayList();
+		List<Integer> removed = SwapRemover.remove(list, removeAts);
 		bh.consume(removed);
 	}
 
