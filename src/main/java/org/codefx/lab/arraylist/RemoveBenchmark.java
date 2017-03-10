@@ -46,7 +46,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -107,9 +107,21 @@ public class RemoveBenchmark {
 		bh.consume(removed);
 	}
 
+	@Benchmark
+	public void listIterator(Blackhole bh) {
+		List<Integer> list = createLinkedList();
+		List<Integer> removed = ListIteratorRemover.remove(list, removeAts);
+		bh.consume(removed);
+	}
+
 	private List<Integer> createArrayList() {
 		int length = Integer.valueOf(arrayLength.replace("_", ""));
 		return fill(new ArrayList<>(length), length);
+	}
+
+	private List<Integer> createLinkedList() {
+		int length = Integer.valueOf(arrayLength.replace("_", ""));
+		return fill(new LinkedList<>(), length);
 	}
 
 	private static List<Integer> fill(List<Integer> list, int length) {
