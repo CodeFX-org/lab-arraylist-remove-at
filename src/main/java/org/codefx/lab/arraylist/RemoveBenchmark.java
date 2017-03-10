@@ -53,9 +53,9 @@ import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.SampleTime)
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
-@Warmup(iterations = 2, time = 2)
-@Measurement(iterations = 2, time = 2)
-@Fork(1)
+@Warmup(iterations = 3, time = 3)
+@Measurement(iterations = 3, time = 3)
+@Fork(3)
 @State(Scope.Thread)
 public class RemoveBenchmark {
 
