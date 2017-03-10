@@ -47,6 +47,7 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -95,23 +96,23 @@ public class RemoveBenchmark {
 
 	@Benchmark
 	public void baseline(Blackhole bh) {
-		ArrayList<Integer> list = createList();
+		List<Integer> list = createArrayList();
 		bh.consume(list);
 	}
 
 	@Benchmark
-	public void listRemove(Blackhole bh) {
-		ArrayList<Integer> list = createList();
-		Arrays.sort(removeAts);
-		for (int i = removeAts.length - 1; i >= 0; i--) {
-			list.remove(removeAts[i]);
-		}
-		bh.consume(list);
+	public void iterativeAt(Blackhole bh) {
+		List<Integer> list = createArrayList();
+		List<Integer> removed = IterativeAtRemover.remove(list, removeAts);
+		bh.consume(removed);
 	}
 
-	private ArrayList<Integer> createList() {
+	private List<Integer> createArrayList() {
 		int length = Integer.valueOf(arrayLength.replace("_", ""));
-		ArrayList<Integer> list = new ArrayList<>();
+		return fill(new ArrayList<>(length), length);
+	}
+
+	private static List<Integer> fill(List<Integer> list, int length) {
 		for (int i = 0; i < length; i++) {
 			list.add(-i);
 		}

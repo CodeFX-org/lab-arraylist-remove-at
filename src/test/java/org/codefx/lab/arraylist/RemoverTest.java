@@ -1,23 +1,21 @@
 package org.codefx.lab.arraylist;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 abstract class RemoverTest {
 
-	abstract <T> ArrayList<T> remove(ArrayList<T> list, Collection<Integer> indices);
+	abstract <T> List<T> createEmptyList();
 
-	private final ArrayList<String> list = new ArrayList<>();
+	abstract <T> List<T> remove(List<T> list, int... removeAts);
+
+	protected final List<String> list = createEmptyList();
 
 	// inheriting nested classes does not seem to work (junit-team/junit5#717),
 	// so they are not nested here and implementers have to extend them
@@ -26,7 +24,7 @@ abstract class RemoverTest {
 
 		@Test
 		void removeNone_emptyList() throws Exception {
-			ArrayList<String> removed = remove(list, emptySet());
+			List<String> removed = remove(list);
 			assertThat(removed).isEmpty();
 		}
 
@@ -34,7 +32,7 @@ abstract class RemoverTest {
 		void removeSome_exception() throws Exception {
 			assertThrows(
 					RuntimeException.class,
-					() -> remove(list, singleton(0)));
+					() -> remove(list, 0));
 		}
 
 	}
@@ -48,13 +46,13 @@ abstract class RemoverTest {
 
 		@Test
 		void removeNone_listHasSameElement() throws Exception {
-			ArrayList<String> removed = remove(list, emptySet());
+			List<String> removed = remove(list);
 			assertThat(removed).containsExactly("A");
 		}
 
 		@Test
 		void removeOnlyElement_emptyList() throws Exception {
-			ArrayList<String> removed = remove(list, singleton(0));
+			List<String> removed = remove(list, 0);
 			assertThat(removed).isEmpty();
 		}
 
@@ -62,12 +60,12 @@ abstract class RemoverTest {
 		void removeInvalidIndex_exception() throws Exception {
 			assertThrows(
 					RuntimeException.class,
-					() -> remove(list, singleton(1)));
+					() -> remove(list, 1));
 		}
 
 	}
 
-	class _ManyElementList {
+	class _ThreeElementList {
 
 		@BeforeEach
 		void fillList() {
@@ -75,46 +73,72 @@ abstract class RemoverTest {
 		}
 
 		@Test
-		void removeFirst_listHasSameElements() throws Exception {
-			ArrayList<String> removed = remove(list, emptySet());
+		void removeNone_listHasSameElements() throws Exception {
+			List<String> removed = remove(list);
 			assertThat(removed).containsExactly("A", "B", "C");
 		}
 
 		@Test
 		void removeFirstElement_firstElementGone() throws Exception {
-			ArrayList<String> removed = remove(list, singleton(0));
+			List<String> removed = remove(list, 0);
 			assertThat(removed).containsExactly("B", "C");
 		}
 
 		@Test
 		void removeMiddleElement_middleElementGone() throws Exception {
-			ArrayList<String> removed = remove(list, singleton(1));
+			List<String> removed = remove(list, 1);
 			assertThat(removed).containsExactly("A", "C");
 		}
 
 		@Test
 		void removeLastElement_lastElementGone() throws Exception {
-			ArrayList<String> removed = remove(list, singleton(2));
+			List<String> removed = remove(list, 2);
 			assertThat(removed).containsExactly("A", "B");
 		}
 
 		@Test
-		void removeFirstElementTwice_firstTwoElementGone() throws Exception {
-			ArrayList<String> removed = remove(list, asList(0, 0));
+		void removeFirstTwoElements_firstTwoElementsGone() throws Exception {
+			List<String> removed = remove(list, 0, 1);
 			assertThat(removed).containsExactly("C");
 		}
 
 		@Test
-		void removeMiddleElements_twoElementGone() throws Exception {
-			ArrayList<String> removed = remove(list, asList(1, 1));
+		void removeLastTwoElements_lastTwoElementsGone() throws Exception {
+			List<String> removed = remove(list, 1, 2);
 			assertThat(removed).containsExactly("A");
 		}
 
+	}
+
+	class _FiveElementList {
+
+		@BeforeEach
+		void fillList() {
+			list.addAll(asList("A", "B", "C", "D", "E"));
+		}
+
 		@Test
-		void removeLastElementTwice_exception() throws Exception {
-			assertThrows(
-					RuntimeException.class,
-					() -> remove(list, asList(2, 2)));
+		void removeTwoConsecutiveInnerElements_elementGone() throws Exception {
+			List<String> removed = remove(list, 1, 2);
+			assertThat(removed).containsExactly("A", "D", "E");
+		}
+
+		@Test
+		void removeThreeConsecutiveInnerElements_elementGone() throws Exception {
+			List<String> removed = remove(list, 1, 2, 3);
+			assertThat(removed).containsExactly("A", "E");
+		}
+
+		@Test
+		void removeThreeElementsIncludingFirst_elementGone() throws Exception {
+			List<String> removed = remove(list, 0, 1, 3);
+			assertThat(removed).containsExactly("C", "E");
+		}
+
+		@Test
+		void removeThreeElementsIncludingLast_elementGone() throws Exception {
+			List<String> removed = remove(list, 1, 3, 4);
+			assertThat(removed).containsExactly("A", "C");
 		}
 
 	}
