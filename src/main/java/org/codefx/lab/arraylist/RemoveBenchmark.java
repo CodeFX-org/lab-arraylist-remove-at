@@ -121,6 +121,13 @@ public class RemoveBenchmark {
 		bh.consume(removed);
 	}
 
+	@Benchmark
+	public void nullifyRemove(Blackhole bh) {
+		List<Integer> list = createArrayList();
+		List<Integer> removed = NullifyRemover.remove(list, removeAts);
+		bh.consume(removed);
+	}
+
 	private List<Integer> createArrayList() {
 		int length = Integer.valueOf(arrayLength.replace("_", ""));
 		return fill(new ArrayList<>(length), length);
