@@ -43,7 +43,6 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
-import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -95,44 +94,38 @@ public class RemoveBenchmark {
 	}
 
 	@Benchmark
-	public void baseline(Blackhole bh) {
-		List<Integer> list = createArrayList();
-		bh.consume(list);
+	public List<Integer> baseline() {
+		return createArrayList();
 	}
 
 	@Benchmark
-	public void iterativeAt(Blackhole bh) {
+	public List<Integer> iterativeAt() {
 		List<Integer> list = createArrayList();
-		List<Integer> removed = IterativeAtRemover.remove(list, removeAts);
-		bh.consume(removed);
+		return IterativeAtRemover.remove(list, removeAts);
 	}
 
 	@Benchmark
-	public void listIterator(Blackhole bh) {
+	public List<Integer> listIterator() {
 		List<Integer> list = createLinkedList();
-		List<Integer> removed = ListIteratorRemover.remove(list, removeAts);
-		bh.consume(removed);
+		return ListIteratorRemover.remove(list, removeAts);
 	}
 
 	@Benchmark
-	public void copyArrayRemove(Blackhole bh) {
+	public List<Integer> copyArrayRemove() {
 		List<Integer> list = createArrayList();
-		List<Integer> removed = ArrayCopyRemover.remove(list, removeAts);
-		bh.consume(removed);
+		return ArrayCopyRemover.remove(list, removeAts);
 	}
 
 	@Benchmark
-	public void nullifyRemove(Blackhole bh) {
+	public List<Integer> nullifyRemove() {
 		List<Integer> list = createArrayList();
-		List<Integer> removed = NullifyRemover.remove(list, removeAts);
-		bh.consume(removed);
+		return NullifyRemover.remove(list, removeAts);
 	}
 
 	@Benchmark
-	public void swapRemove(Blackhole bh) {
+	public List<Integer> swapRemove() {
 		List<Integer> list = createArrayList();
-		List<Integer> removed = SwapRemover.remove(list, removeAts);
-		bh.consume(removed);
+		return SwapRemover.remove(list, removeAts);
 	}
 
 	private List<Integer> createArrayList() {
