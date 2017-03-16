@@ -45,9 +45,11 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode(Mode.SampleTime)
@@ -84,13 +86,15 @@ public class RemoveBenchmark {
 	@Setup(Level.Iteration)
 	public void createRemovalIndices() {
 		Random r = new Random();
-		int length = Integer.valueOf(arrayLength.replace("_", ""));
+		int listLength = Integer.valueOf(arrayLength.replace("_", ""));
 		int removals = Integer.valueOf(this.removals.replace("_", ""));
 
-		removeAts = new int[removals];
-		for (int i = 0; i < removals; i++) {
-			removeAts[i] = r.nextInt(length);
-		}
+		// use set to make sure removal indices are unique
+		Set<Integer> removalAtIndices = new HashSet<>();
+		while(removalAtIndices.size() < removals)
+			removalAtIndices.add(r.nextInt(listLength));
+
+		removeAts = removalAtIndices.stream().mapToInt(i -> i).toArray();
 	}
 
 	@Benchmark
