@@ -24,6 +24,8 @@ class SwapRemoverTest extends RemoverTest {
 	@Nested class SingleElementList extends _SingleElementList {}
 	@Nested class ThreeElementList extends _ThreeElementList {
 
+		// override tests that verify the list order was not changed
+
 		@Test
 		void removeFirstElement_firstElementGone() throws Exception {
 			List<String> removed = remove(list, 0);
@@ -33,6 +35,8 @@ class SwapRemoverTest extends RemoverTest {
 	}
 
 	@Nested class FiveElementList extends _FiveElementList {
+
+		// override tests that verify the list order was not changed
 
 		@Test
 		void removeTwoConsecutiveInnerElements_elementGone() throws Exception {
